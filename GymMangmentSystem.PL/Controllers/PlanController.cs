@@ -1,20 +1,21 @@
-﻿using GymMangmentSystem.DAL.Repositories.Interfaces;
+﻿using GymMangmentSystem.DAL.Models;
+using GymMangmentSystem.DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MvcProjectG03.Controllers
+namespace GymMangmentSystem.PL.Controllers
 {
     public class PlanController : Controller
     {
-        private readonly IPlanRepository planRepository;
+        private readonly IGenericRepository<Plan> planRepository;
 
-        public PlanController(IPlanRepository repository)
+        public PlanController(IGenericRepository<Plan> repository)
         {
             this.planRepository = repository;
         }
 
         public async Task<IActionResult> Index(CancellationToken ct)
         {
-            var Plans = await planRepository.GetAllPlansAsync(ct: ct);
+            var Plans = await planRepository.GetAllAsync(ct: ct);
             return View(Plans);
         }
         public async Task<IActionResult> Details(int id, CancellationToken ct)
