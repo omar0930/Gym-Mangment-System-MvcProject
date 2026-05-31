@@ -35,9 +35,11 @@ namespace GymMangmentSystem.DAL.Repositories.Classes
             return await _context.SaveChangesAsync();
         }
 
-        public Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, bool tracking = false, CancellationToken ct = default)
+        public Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, bool tracking = false, CancellationToken ct = default, params Expression<Func<TEntity, object>>[] includes)
         {
             IQueryable<TEntity> query = tracking ? _dbSet : _dbSet.AsNoTracking();
+            foreach (var include in includes)
+                query = query.Include(include);
             return query.FirstOrDefaultAsync(predicate, ct);
         }
 
@@ -47,9 +49,15 @@ namespace GymMangmentSystem.DAL.Repositories.Classes
             return await query.ToListAsync(ct);
         }
 
-        public async Task<TEntity?> GetByIdAsync(int id, CancellationToken ct = default)
+        public async Task<TEntity?> GetByIdAsync(int id, CancellationToken ct = default, params Expression<Func<TEntity, object>>[] includes)
         {
-            return await _dbSet.FindAsync(new object[] { id }, ct);
+            if (includes.Length == 0)
+                return await _dbSet.FindAsync(new object[] { id }, ct);
+
+            IQueryable<TEntity> query = _dbSet;
+            foreach (var include in includes)
+                query = query.Include(include);
+            return await query.FirstOrDefaultAsync(e => e.Id == id, ct);
         }
 
         public async Task<int> UpdateAsync(TEntity entity)

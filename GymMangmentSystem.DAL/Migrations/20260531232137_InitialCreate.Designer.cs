@@ -4,6 +4,7 @@ using GymMangmentSystem.DAL.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymMangmentSystem.DAL.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    partial class GymDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260531232137_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,18 +103,11 @@ namespace GymMangmentSystem.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<decimal>("Salary")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Specialty")
-                        .IsRequired()
-                        .HasColumnType("varchar(20)");
+                    b.Property<int>("Specialty")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("YearsOfExperience")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -386,21 +382,11 @@ namespace GymMangmentSystem.DAL.Migrations
                                 .HasColumnType("varchar")
                                 .HasColumnName("City");
 
-                            b1.Property<string>("State")
-                                .HasMaxLength(100)
-                                .HasColumnType("varchar")
-                                .HasColumnName("State");
-
                             b1.Property<string>("Street")
                                 .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("varchar")
                                 .HasColumnName("Street");
-
-                            b1.Property<string>("ZipCode")
-                                .HasMaxLength(20)
-                                .HasColumnType("varchar")
-                                .HasColumnName("ZipCode");
 
                             b1.HasKey("TrainerId");
 
@@ -449,21 +435,11 @@ namespace GymMangmentSystem.DAL.Migrations
                                 .HasColumnType("varchar")
                                 .HasColumnName("City");
 
-                            b1.Property<string>("State")
-                                .HasMaxLength(100)
-                                .HasColumnType("varchar")
-                                .HasColumnName("State");
-
                             b1.Property<string>("Street")
                                 .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("varchar")
                                 .HasColumnName("Street");
-
-                            b1.Property<string>("ZipCode")
-                                .HasMaxLength(20)
-                                .HasColumnType("varchar")
-                                .HasColumnName("ZipCode");
 
                             b1.HasKey("MemberId");
 

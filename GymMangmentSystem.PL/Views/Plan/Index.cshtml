@@ -1,4 +1,8 @@
-﻿
+﻿@model IEnumerable<Plan>
+@{
+    ViewData["Title"] = "Membership Plans";
+}
+
     <div class="container">
 
         <main role="main" class="pb-3">
@@ -35,20 +39,27 @@
                                             <small class="text-muted">EGP</small>
                                         </div>
 
+                                        <div class="text-center mb-3">
+                                            @if (plan.IsActive)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Inactive</span>
+                                            }
+                                        </div>
+
                                         <div class="mb-3">
 
                                             <p class="text-muted mb-2">
                                                 <i class="bi bi-calendar-check text-primary-color me-2"></i>
-                                                <strong>Duration:</strong> @plan.Duration
+                                                <strong>Duration:</strong> @plan.DurationInDays days
                                             </p>
 
                                             <p class="text-muted mb-3">
                                                 <i class="bi bi-file-text text-primary-color me-2"></i>
                                                 <strong>Description:</strong> @plan.Description
-                                            </p>
-
-                                            <p class="small">
-                                                Access to gym equipment during staffed hours
                                             </p>
 
                                         </div>
@@ -57,7 +68,7 @@
 
                                             <div class="d-grid gap-2">
 
-                                                <a asp-controller="Plans" asp-action="Details" asp-route-id="@plan.Id"
+                                                <a asp-controller="Plan" asp-action="Details" asp-route-id="@plan.Id"
                                                        class="btn btn-outline btn-sm">
 
                                                     <i class="bi bi-eye me-1"></i>
@@ -66,14 +77,14 @@
 
                                                 <div class="d-flex gap-2">
 
-                                                    <a asp-controller="Plans" asp-action="Edit" asp-route-id="@plan.Id"
+                                                    <a asp-controller="Plan" asp-action="Edit" asp-route-id="@plan.Id"
                                                            class="btn btn-outline btn-sm flex-fill">
 
                                                         <i class="bi bi-pencil me-1"></i>
                                                         Edit
                                                     </a>
 
-                                                    <form asp-controller="Plans" asp-action="Activate" asp-route-id="@plan.Id"
+                                                    <form asp-controller="Plan" asp-action="Activate" asp-route-id="@plan.Id"
                                                           method="post"
                                                           class="flex-fill">
 
@@ -82,15 +93,11 @@
 
                                                             @if(plan.IsActive)
                                                             {
-                                                                <i class="bi bi-x-circle me-1">
-                                                                    Deactivate
-                                                                </i>
+                                                                <i class="bi bi-x-circle me-1"></i><text>Deactivate</text>
                                                             }
                                                             else
                                                             {
-                                                                <i class="bi bi-check-circle me-1">
-                                                                    Activate
-                                                                </i>
+                                                                <i class="bi bi-check-circle me-1"></i><text>Activate</text>
                                                             }
 
                                                         </button>

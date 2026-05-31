@@ -1,9 +1,5 @@
-﻿using GymMangmentSystem.DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GymMangmentSystem.DAL.Data.Models.Enums;
+using GymMangmentSystem.DAL.Models;
 
 namespace GymMangmentSystem.DAL.Data.Models
 {
@@ -11,8 +7,9 @@ namespace GymMangmentSystem.DAL.Data.Models
     {
         public decimal Height { get; set; }
         public decimal Width { get; set; }
+        public decimal Weight { get; set; }
         public string? Note { get; set; }
-        public string BloodType { get; set; }
+        public BloodType BloodType { get; set; }
 
         //last updated = updatedat 
 

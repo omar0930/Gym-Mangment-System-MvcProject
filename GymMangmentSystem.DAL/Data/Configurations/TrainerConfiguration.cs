@@ -12,6 +12,13 @@ namespace GymMangmentSystem.DAL.Data.Configurations
 
             builder.Property(x => x.CreatedAt)
                 .HasDefaultValueSql("GETDATE()");
+
+            builder.Property(x => x.Salary)
+                .HasColumnType("decimal(18,2)");
+
+            builder.Property(x => x.Specialty)
+                .HasConversion<string>()
+                .HasColumnType("varchar(20)");
         }
     }
 }

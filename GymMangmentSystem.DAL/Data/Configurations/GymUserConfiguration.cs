@@ -33,6 +33,10 @@ namespace GymMangmentSystem.DAL.Data.Configurations
                     .HasColumnName("Street");
                 address.Property(x => x.City).HasColumnName("City").HasColumnType("varchar")
                     .HasMaxLength(100);
+                address.Property(x => x.State).HasColumnName("State").HasColumnType("varchar")
+                    .HasMaxLength(100);
+                address.Property(x => x.ZipCode).HasColumnName("ZipCode").HasColumnType("varchar")
+                    .HasMaxLength(20);
             });
 
         }

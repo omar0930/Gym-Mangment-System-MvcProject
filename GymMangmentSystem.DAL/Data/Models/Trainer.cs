@@ -12,6 +12,8 @@ namespace GymMangmentSystem.DAL.Data.Models
     {
         //hireDate = Created Date
         public Specialty Specialty { get; set; }
+        public decimal Salary { get; set; }
+        public int YearsOfExperience { get; set; }
 
         //Relations
         public ICollection<Session> Sessions { get; set; } = default!;

@@ -1,5 +1,4 @@
 using GymMangmentSystem.DAL.Data.Models;
-using MvcProjectG03.Models;
 
 namespace GymMangmentSystem.DAL.Models
 {

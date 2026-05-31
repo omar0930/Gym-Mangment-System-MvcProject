@@ -11,12 +11,12 @@ namespace GymMangmentSystem.DAL.Configurations
             builder.HasKey(x => new { x.MemberId, x.SessionId });
 
             builder.HasOne(x => x.Member)
-                .WithMany()
+                .WithMany(m => m.MemberSessions)
                 .HasForeignKey(x => x.MemberId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.Session)
-                .WithMany()
+                .WithMany(s => s.SessionMembers)
                 .HasForeignKey(x => x.SessionId)
                 .OnDelete(DeleteBehavior.Restrict);
 
