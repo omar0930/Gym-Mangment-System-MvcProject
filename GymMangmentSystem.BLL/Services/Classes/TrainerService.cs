@@ -8,11 +8,12 @@ namespace GymMangmentSystem.BLL.Services.Classes
 {
     public class TrainerService : ITrainerService
     {
-        private readonly IGenericRepository<Trainer> _trainerRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private IGenericRepository<Trainer> _trainerRepository => _unitOfWork.GetRepository<Trainer>();
 
-        public TrainerService(IGenericRepository<Trainer> trainerRepository)
+        public TrainerService(IUnitOfWork unitOfWork)
         {
-            _trainerRepository = trainerRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> CreateTrainerAsync(CreateTrainerViewModel model, CancellationToken ct = default)

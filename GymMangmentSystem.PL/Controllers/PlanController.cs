@@ -7,11 +7,12 @@ namespace GymMangmentSystem.PL.Controllers
 {
     public class PlanController : Controller
     {
-        private readonly IGenericRepository<Plan> planRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private IGenericRepository<Plan> planRepository => _unitOfWork.GetRepository<Plan>();
 
-        public PlanController(IGenericRepository<Plan> repository)
+        public PlanController(IUnitOfWork unitOfWork)
         {
-            this.planRepository = repository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IActionResult> Index(CancellationToken ct)

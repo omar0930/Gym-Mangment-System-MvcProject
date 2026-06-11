@@ -8,15 +8,13 @@ namespace GymMangmentSystem.BLL.Services.Classes
 {
     public class MemberService : IMemberService
     {
-        private readonly IGenericRepository<Member> _memberRepository;
-        private readonly IGenericRepository<Membership> _membershipRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private IGenericRepository<Member> _memberRepository => _unitOfWork.GetRepository<Member>();
+        private IGenericRepository<Membership> _membershipRepository => _unitOfWork.GetRepository<Membership>();
 
-        public MemberService(
-            IGenericRepository<Member> memberRepository,
-            IGenericRepository<Membership> membershipRepository)
+        public MemberService(IUnitOfWork unitOfWork)
         {
-            _memberRepository = memberRepository;
-            _membershipRepository = membershipRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> CreateMemberAsync(CreateMemberViewModel model, CancellationToken ct = default)

@@ -19,4 +19,10 @@
 		<ProjectReference Include="..\GymMangmentSystem.BLL\GymMangmentSystem.BLL.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<None Update="Data\plans.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
 </Project>

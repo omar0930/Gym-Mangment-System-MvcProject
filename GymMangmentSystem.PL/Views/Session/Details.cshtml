@@ -1,5 +1,5 @@
-@*
-﻿@{
+@model SessionViewModel
+@{
     ViewData["Title"] = "Session Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -61,7 +61,7 @@
                                     </div>
                                     <div>
                                         <small class="text-muted d-block">Start Time</small>
-                                        <strong>@Model.StartDate</strong>
+                                        <strong>@Model.StartDate.ToString("MMM dd, yyyy hh:mm tt")</strong>
                                     </div>
                                 </div>
                             </div>
@@ -75,7 +75,7 @@
                                     </div>
                                     <div>
                                         <small class="text-muted d-block">End Time</small>
-                                        <strong>@Model.EndDate</strong>
+                                        <strong>@Model.EndDate.ToString("MMM dd, yyyy hh:mm tt")</strong>
                                     </div>
                                 </div>
                             </div>
@@ -110,4 +110,3 @@
         </div>
     </div>
 </div>
-*@

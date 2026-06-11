@@ -1,5 +1,5 @@
-@*
-﻿@{
+@model SessionViewModel
+@{
     ViewData["Title"] = "Delete Session";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -19,9 +19,10 @@
                         <strong><i class="bi bi-info-circle me-2"></i>Warning:</strong>
                         This action cannot be undone. All session data and bookings will be permanently deleted.
                     </div>
-                    <p class="text-muted mb-4">Are you sure you want to delete this session?</p>
+                    <p class="text-muted mb-2">Are you sure you want to delete this session?</p>
+                    <p class="fw-semibold mb-4">@Model.CategoryName — @Model.DateDisplay</p>
 
-                    <form asp-action="DeleteConfirmed" asp-route-id="@Context.Request.RouteValues["id"]" method="post">
+                    <form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post">
                         <div class="d-flex justify-content-between gap-3">
                             <a asp-action="Index" class="btn btn-outline flex-fill">
                                 <i class="bi bi-x-lg me-1"></i>Cancel
@@ -36,4 +37,3 @@
         </div>
     </div>
 </div>
-*@

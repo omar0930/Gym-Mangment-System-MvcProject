@@ -1,7 +1,8 @@
-﻿using AutoMapper;
+using AutoMapper;
 using GymMangmentSystem.BLL.Common;
 using GymMangmentSystem.BLL.Services.InterFaces;
 using GymMangmentSystem.BLL.ViewModels.SessionViewModels;
+using GymMangmentSystem.DAL.Data.Models;
 using GymMangmentSystem.DAL.Models;
 using GymMangmentSystem.DAL.Repositories.Interfaces;
 
@@ -18,9 +19,24 @@ namespace GymMangmentSystem.BLL.Services.Classes
             _mapper = mapper;
         }
 
-        public Task<Result> CreateSessionAsync(CreateSessionViewModel model, CancellationToken ct = default)
+        public async Task<Result> CreateSessionAsync(CreateSessionViewModel model, CancellationToken ct = default)
         {
-            throw new NotImplementedException();
+            if (model.EndDate <= model.StartDate)
+                return Result.ValidationError("End date must be after the start date.");
+
+            var trainerExists = await _unitOfWork.GetRepository<Trainer>().AnyAsync(t => t.Id == model.TrainerId, ct);
+            if (!trainerExists) return Result.NotFound("Selected trainer was not found.");
+
+            var categoryExists = await _unitOfWork.GetRepository<Category>().AnyAsync(c => c.Id == model.CategoryId, ct);
+            if (!categoryExists) return Result.NotFound("Selected category was not found.");
+
+            var session = _mapper.Map<Session>(model);
+            session.CreatedAt = session.UpdatedAt = DateTime.Now;
+
+            var result = await _unitOfWork.GetRepository<Session>().AddAsync(session);
+            return result > 0
+                ? Result.Success()
+                : Result.Failure("Failed to create the session.");
         }
 
         public async Task<IEnumerable<SessionViewModel>?> GetAllSessionsAsync(CancellationToken ct = default)
@@ -36,9 +52,11 @@ namespace GymMangmentSystem.BLL.Services.Classes
             return MappedSessions;
         }
 
-        public Task<IEnumerable<CategorySelectViewModel>?> GetCategoriesForDropDownAsync(CancellationToken ct = default)
+        public async Task<IEnumerable<CategorySelectViewModel>?> GetCategoriesForDropDownAsync(CancellationToken ct = default)
         {
-            throw new NotImplementedException();
+            var categories = await _unitOfWork.GetRepository<Category>().GetAllAsync(ct: ct);
+            if (!categories.Any()) return null;
+            return _mapper.Map<IEnumerable<CategorySelectViewModel>>(categories);
         }
 
         public async Task<SessionViewModel?> GetSessionByIdAsync(int SessionId, CancellationToken ct = default)
@@ -50,9 +68,9 @@ namespace GymMangmentSystem.BLL.Services.Classes
             return MappedSession;
         }
 
-        public async Task<UpdateSessionViewModel> GetSessionToUpdateAsync(int SessionId, CancellationToken ct = default)
+        public async Task<UpdateSessionViewModel?> GetSessionToUpdateAsync(int SessionId, CancellationToken ct = default)
         {
-            var Session = await _unitOfWork.GetRepository<Session>().GetByIdAsync(SessionId);
+            var Session = await _unitOfWork.GetRepository<Session>().GetByIdAsync(SessionId, ct);
             if (Session == null) return null;
             if (!await IsSessionAvalableForUpdateAsync(Session, ct)) return null;
             return _mapper.Map<UpdateSessionViewModel>(Session);
@@ -66,19 +84,45 @@ namespace GymMangmentSystem.BLL.Services.Classes
             return Booked > 0;
         }
 
-        public Task<IEnumerable<TrainerSelectViewModel>?> GetTrainersForDropDownAsync(CancellationToken ct = default)
+        public async Task<IEnumerable<TrainerSelectViewModel>?> GetTrainersForDropDownAsync(CancellationToken ct = default)
         {
-            throw new NotImplementedException();
+            var trainers = await _unitOfWork.GetRepository<Trainer>().GetAllAsync(ct: ct);
+            if (!trainers.Any()) return null;
+            return _mapper.Map<IEnumerable<TrainerSelectViewModel>>(trainers);
         }
 
-        public Task<Result> RemoveSessionAsync(int SessionId, CancellationToken ct = default)
+        public async Task<Result> RemoveSessionAsync(int SessionId, CancellationToken ct = default)
         {
-            throw new NotImplementedException();
+            var session = await _unitOfWork.GetRepository<Session>().GetByIdAsync(SessionId, ct);
+            if (session == null) return Result.NotFound("Session not found.");
+
+            var result = await _unitOfWork.GetRepository<Session>().DeleteAsync(session);
+            return result > 0
+                ? Result.Success()
+                : Result.Failure("Failed to delete the session.");
         }
 
-        public Task<Result> UpdateSessionAsync(int id, UpdateSessionViewModel model, CancellationToken ct = default)
+        public async Task<Result> UpdateSessionAsync(int id, UpdateSessionViewModel model, CancellationToken ct = default)
         {
-            throw new NotImplementedException();
+            if (model.EndDate <= model.StartDate)
+                return Result.ValidationError("End date must be after the start date.");
+
+            var session = await _unitOfWork.GetRepository<Session>().GetByIdAsync(id, ct);
+            if (session == null) return Result.NotFound("Session not found.");
+
+            var trainerExists = await _unitOfWork.GetRepository<Trainer>().AnyAsync(t => t.Id == model.TrainerId, ct);
+            if (!trainerExists) return Result.NotFound("Selected trainer was not found.");
+
+            session.Descreption = model.Description;
+            session.StartDate = model.StartDate;
+            session.EndDate = model.EndDate;
+            session.TrainerId = model.TrainerId;
+            session.UpdatedAt = DateTime.Now;
+
+            var result = await _unitOfWork.GetRepository<Session>().UpdateAsync(session);
+            return result > 0
+                ? Result.Success()
+                : Result.Failure("Failed to update the session.");
         }
     }
 }

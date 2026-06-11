@@ -12,7 +12,7 @@ namespace GymMangmentSystem.BLL.Services.InterFaces
     {
         Task<IEnumerable<SessionViewModel>?> GetAllSessionsAsync(CancellationToken ct = default);
         Task<SessionViewModel?> GetSessionByIdAsync(int SessionId, CancellationToken ct = default);
-        Task<UpdateSessionViewModel> GetSessionToUpdateAsync(int SessionId, CancellationToken ct = default);
+        Task<UpdateSessionViewModel?> GetSessionToUpdateAsync(int SessionId, CancellationToken ct = default);
         Task<Result> CreateSessionAsync(CreateSessionViewModel model, CancellationToken ct = default);
         Task<Result> UpdateSessionAsync(int id, UpdateSessionViewModel model, CancellationToken ct = default);
         Task<Result> RemoveSessionAsync(int SessionId, CancellationToken ct = default);

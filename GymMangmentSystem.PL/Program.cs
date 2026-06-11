@@ -6,6 +6,7 @@ using GymMangmentSystem.DAL.Models;
 using GymMangmentSystem.DAL.Repositories.Classes;
 using GymMangmentSystem.DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace GymMangmentSystem.PL
 {
@@ -21,11 +22,12 @@ namespace GymMangmentSystem.PL
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            builder.Services.AddScoped<IMemberService, MemberService>();
-            builder.Services.AddScoped<ITrainerService, TrainerService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+            builder.Services.AddScoped<IMemberService, MemberService>();
+            builder.Services.AddScoped<ITrainerService, TrainerService>();
+            builder.Services.AddScoped<ISessionService, SessionService>();
+            builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
             builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
 
             var app = builder.Build();
@@ -61,17 +63,31 @@ namespace GymMangmentSystem.PL
 
             context.Database.Migrate();
 
+            // Idempotent: only seed when the Plans table is empty.
             if (context.Plans.Any())
                 return;
 
-            var now = DateTime.Now;
-            context.Plans.AddRange(
-                new Plan { Name = "Basic", Description = "Access to gym floor and locker rooms during standard hours.", DurationInDays = 30, Price = 250m, IsActive = true, CreatedAt = now, UpdatedAt = now },
-                new Plan { Name = "Standard", Description = "Full gym access plus group classes and sauna.", DurationInDays = 90, Price = 650m, IsActive = true, CreatedAt = now, UpdatedAt = now },
-                new Plan { Name = "Premium", Description = "Unlimited access, personal trainer sessions, and nutrition guidance.", DurationInDays = 180, Price = 1200m, IsActive = true, CreatedAt = now, UpdatedAt = now },
-                new Plan { Name = "Annual Elite", Description = "Year-round all-inclusive membership with priority booking.", DurationInDays = 365, Price = 2200m, IsActive = true, CreatedAt = now, UpdatedAt = now }
-            );
+            var filePath = Path.Combine(app.Environment.ContentRootPath, "Data", "plans.json");
+            if (!File.Exists(filePath))
+                return;
 
+            var json = File.ReadAllText(filePath);
+            var plans = JsonSerializer.Deserialize<List<Plan>>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (plans is null || plans.Count == 0)
+                return;
+
+            var now = DateTime.Now;
+            foreach (var plan in plans)
+            {
+                plan.CreatedAt = now;
+                plan.UpdatedAt = now;
+            }
+
+            context.Plans.AddRange(plans);
             context.SaveChanges();
         }
     }
