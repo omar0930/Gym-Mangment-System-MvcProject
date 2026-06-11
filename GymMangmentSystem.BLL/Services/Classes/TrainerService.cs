@@ -1,7 +1,7 @@
+using AutoMapper;
 using GymMangmentSystem.BLL.Services.InterFaces;
 using GymMangmentSystem.BLL.ViewModels.TrainerViewModels;
 using GymMangmentSystem.DAL.Data.Models;
-using GymMangmentSystem.DAL.Data.Models.Enums;
 using GymMangmentSystem.DAL.Repositories.Interfaces;
 
 namespace GymMangmentSystem.BLL.Services.Classes
@@ -9,11 +9,13 @@ namespace GymMangmentSystem.BLL.Services.Classes
     public class TrainerService : ITrainerService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
         private IGenericRepository<Trainer> _trainerRepository => _unitOfWork.GetRepository<Trainer>();
 
-        public TrainerService(IUnitOfWork unitOfWork)
+        public TrainerService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<bool> CreateTrainerAsync(CreateTrainerViewModel model, CancellationToken ct = default)
@@ -22,25 +24,8 @@ namespace GymMangmentSystem.BLL.Services.Classes
             var phoneExist = await _trainerRepository.AnyAsync(x => x.Phone == model.Phone, ct);
             if (emailExist || phoneExist) return false;
 
-            var trainer = new Trainer
-            {
-                Name = $"{model.FirstName} {model.LastName}",
-                Email = model.Email,
-                Phone = model.Phone,
-                Gender = model.Gender,
-                DateOfBirth = model.DateOfBirth,
-                Specialty = model.Specialty,
-                Salary = model.Salary,
-                YearsOfExperience = model.YearsOfExperience,
-                Address = new Address
-                {
-                    Street = model.Street,
-                    City = model.City,
-                    BuildingNumber = model.BuildingNumber,
-                    State = model.State,
-                    ZipCode = model.ZipCode,
-                }
-            };
+            var trainer = _mapper.Map<Trainer>(model);
+            trainer.CreatedAt = trainer.UpdatedAt = DateTime.Now;
 
             var result = await _trainerRepository.AddAsync(trainer);
             return result > 0;
@@ -51,18 +36,7 @@ namespace GymMangmentSystem.BLL.Services.Classes
             var trainers = await _trainerRepository.GetAllAsync(ct: ct);
             if (!trainers.Any()) return [];
 
-            return trainers.Select(t => new TrainerViewModel
-            {
-                Id = t.Id,
-                Name = t.Name,
-                Email = t.Email,
-                Phone = t.Phone,
-                Gender = t.Gender.ToString(),
-                DateOfBirth = t.DateOfBirth.ToShortDateString(),
-                Specialty = t.Specialty.ToString(),
-                Salary = t.Salary,
-                YearsOfExperience = t.YearsOfExperience,
-            });
+            return _mapper.Map<IEnumerable<TrainerViewModel>>(trainers);
         }
 
         public async Task<TrainerViewModel?> GetTrainerDetailsAsync(int trainerId, CancellationToken ct = default)
@@ -70,23 +44,7 @@ namespace GymMangmentSystem.BLL.Services.Classes
             var trainer = await _trainerRepository.GetByIdAsync(trainerId, ct);
             if (trainer == null) return null;
 
-            return new TrainerViewModel
-            {
-                Id = trainer.Id,
-                Name = trainer.Name,
-                Email = trainer.Email,
-                Phone = trainer.Phone,
-                Gender = trainer.Gender.ToString(),
-                DateOfBirth = trainer.DateOfBirth.ToShortDateString(),
-                Specialty = trainer.Specialty.ToString(),
-                Salary = trainer.Salary,
-                YearsOfExperience = trainer.YearsOfExperience,
-                Street = trainer.Address.Street,
-                City = trainer.Address.City,
-                BuildingNumber = trainer.Address.BuildingNumber,
-                State = trainer.Address.State,
-                ZipCode = trainer.Address.ZipCode,
-            };
+            return _mapper.Map<TrainerViewModel>(trainer);
         }
 
         public async Task<TrainerToUpdateViewModel?> GetTrainerToUpdateAsync(int trainerId, CancellationToken ct = default)
@@ -94,23 +52,7 @@ namespace GymMangmentSystem.BLL.Services.Classes
             var trainer = await _trainerRepository.GetByIdAsync(trainerId, ct);
             if (trainer == null) return null;
 
-            return new TrainerToUpdateViewModel
-            {
-                Id = trainer.Id,
-                Name = trainer.Name,
-                Gender = trainer.Gender.ToString(),
-                DateOfBirth = trainer.DateOfBirth.ToShortDateString(),
-                Email = trainer.Email,
-                Phone = trainer.Phone,
-                Street = trainer.Address.Street,
-                City = trainer.Address.City,
-                BuildingNumber = trainer.Address.BuildingNumber,
-                State = trainer.Address.State,
-                ZipCode = trainer.Address.ZipCode,
-                Specialty = trainer.Specialty,
-                Salary = trainer.Salary,
-                YearsOfExperience = trainer.YearsOfExperience,
-            };
+            return _mapper.Map<TrainerToUpdateViewModel>(trainer);
         }
 
         public async Task<bool> UpdateTrainerAsync(int id, TrainerToUpdateViewModel model, CancellationToken ct = default)

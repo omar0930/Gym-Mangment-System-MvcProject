@@ -1,4 +1,5 @@
 using GymMangmentSystem.BLL;
+using GymMangmentSystem.BLL.Services.AttachmentService;
 using GymMangmentSystem.BLL.Services.Classes;
 using GymMangmentSystem.BLL.Services.InterFaces;
 using GymMangmentSystem.DAL.DbContexts;
@@ -27,7 +28,9 @@ namespace GymMangmentSystem.PL
             builder.Services.AddScoped<IMemberService, MemberService>();
             builder.Services.AddScoped<ITrainerService, TrainerService>();
             builder.Services.AddScoped<ISessionService, SessionService>();
+            builder.Services.AddScoped<IPlanService, PlanService>();
             builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+            builder.Services.AddScoped<IAttachmentService, AttachmentService>();
             builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
 
             var app = builder.Build();
@@ -43,6 +46,7 @@ namespace GymMangmentSystem.PL
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseRouting();
 
             app.UseAuthorization();
