@@ -20,9 +20,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="Data\plans.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
+	  <Folder Include="wwwroot\Files\" />
 	</ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@ namespace GymMangmentSystem.PL
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -31,8 +31,8 @@ namespace GymMangmentSystem.PL
             builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
 
             var app = builder.Build();
+            await app.MigrateAndSeedDataAsync();
 
-            SeedPlans(app);
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -54,41 +54,6 @@ namespace GymMangmentSystem.PL
                 .WithStaticAssets();
 
             app.Run();
-        }
-
-        private static void SeedPlans(WebApplication app)
-        {
-            using var scope = app.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<GymDbContext>();
-
-            context.Database.Migrate();
-
-            // Idempotent: only seed when the Plans table is empty.
-            if (context.Plans.Any())
-                return;
-
-            var filePath = Path.Combine(app.Environment.ContentRootPath, "Data", "plans.json");
-            if (!File.Exists(filePath))
-                return;
-
-            var json = File.ReadAllText(filePath);
-            var plans = JsonSerializer.Deserialize<List<Plan>>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            if (plans is null || plans.Count == 0)
-                return;
-
-            var now = DateTime.Now;
-            foreach (var plan in plans)
-            {
-                plan.CreatedAt = now;
-                plan.UpdatedAt = now;
-            }
-
-            context.Plans.AddRange(plans);
-            context.SaveChanges();
         }
     }
 }
