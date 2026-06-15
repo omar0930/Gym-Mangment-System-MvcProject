@@ -27,7 +27,8 @@ namespace GymMangmentSystem.BLL.Services.Classes
             var trainer = _mapper.Map<Trainer>(model);
             trainer.CreatedAt = trainer.UpdatedAt = DateTime.Now;
 
-            var result = await _trainerRepository.AddAsync(trainer);
+            _trainerRepository.Add(trainer);
+            var result = await _unitOfWork.SaveChangesAsync(ct);
             return result > 0;
         }
 
@@ -76,7 +77,8 @@ namespace GymMangmentSystem.BLL.Services.Classes
             trainer.Address.ZipCode = model.ZipCode;
             trainer.UpdatedAt = DateTime.Now;
 
-            var result = await _trainerRepository.UpdateAsync(trainer);
+            _trainerRepository.Update(trainer);
+            var result = await _unitOfWork.SaveChangesAsync(ct);
             return result > 0;
         }
 
@@ -85,7 +87,8 @@ namespace GymMangmentSystem.BLL.Services.Classes
             var trainer = await _trainerRepository.GetByIdAsync(id, ct);
             if (trainer == null) return false;
 
-            var result = await _trainerRepository.DeleteAsync(trainer);
+            _trainerRepository.Delete(trainer);
+            var result = await _unitOfWork.SaveChangesAsync(ct);
             return result > 0;
         }
     }

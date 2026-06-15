@@ -18,6 +18,11 @@ namespace GymMangmentSystem.BLL.Services.AttachmentService
 
         public async Task<string?> UploadAsync(Stream FileStream, string FileName, string FolderName, CancellationToken ct = default)
         {
+            if (FileStream is null || !FileStream.CanRead || FileStream.Length == 0)
+                return null;
+            if (string.IsNullOrWhiteSpace(FileName) || string.IsNullOrWhiteSpace(FolderName))
+                return null;
+
             var extension = Path.GetExtension(FileName).ToLowerInvariant();
             if (!_allowedExtenstions.Contains(extension))
             {
@@ -39,7 +44,7 @@ namespace GymMangmentSystem.BLL.Services.AttachmentService
 
             try
             {
-                using var target = new FileStream(fullPath, FileMode.Create);
+                await using var target = new FileStream(fullPath, FileMode.CreateNew, FileAccess.Write, FileShare.None);
                 await FileStream.CopyToAsync(target, ct);
             }
             catch (Exception ex)
@@ -54,6 +59,8 @@ namespace GymMangmentSystem.BLL.Services.AttachmentService
 
         public bool Delete(string FileName, string FolderName)
         {
+            if (string.IsNullOrWhiteSpace(FileName) || string.IsNullOrWhiteSpace(FolderName))
+                return false;
             try
             {
                 var fullPath = Path.Combine(_env.WebRootPath, FolderName, FileName);
@@ -75,6 +82,9 @@ namespace GymMangmentSystem.BLL.Services.AttachmentService
 
         public (Stream stream, string ContentType)? GetFile(string FileName, string FolderName)
         {
+            if (string.IsNullOrWhiteSpace(FileName) || string.IsNullOrWhiteSpace(FolderName))
+                return null;
+
             var fullPath = Path.Combine(_env.WebRootPath, FolderName, FileName);
             if (!File.Exists(fullPath))
                 return null;

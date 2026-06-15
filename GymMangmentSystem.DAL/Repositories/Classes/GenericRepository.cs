@@ -18,22 +18,14 @@ namespace GymMangmentSystem.DAL.Repositories.Classes
             _dbSet = _context.Set<TEntity>();
         }
 
-        public async Task<int> AddAsync(TEntity entity)
-        {
-            await _dbSet.AddAsync(entity);
-            return await _context.SaveChangesAsync();
-        }
+        public void Add(TEntity entity) => _dbSet.Add(entity);
 
         public Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default)
         {
             return _dbSet.AsNoTracking().AnyAsync(predicate, ct);
         }
 
-        public async Task<int> DeleteAsync(TEntity entity)
-        {
-            _dbSet.Remove(entity);
-            return await _context.SaveChangesAsync();
-        }
+        public void Delete(TEntity entity) => _dbSet.Remove(entity);
 
         public Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, bool tracking = false, CancellationToken ct = default, params Expression<Func<TEntity, object>>[] includes)
         {
@@ -60,10 +52,6 @@ namespace GymMangmentSystem.DAL.Repositories.Classes
             return await query.FirstOrDefaultAsync(e => e.Id == id, ct);
         }
 
-        public async Task<int> UpdateAsync(TEntity entity)
-        {
-            _dbSet.Update(entity);
-            return await _context.SaveChangesAsync();
-        }
+        public void Update(TEntity entity) => _dbSet.Update(entity);
     }
 }

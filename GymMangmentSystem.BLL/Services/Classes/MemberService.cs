@@ -1,4 +1,5 @@
 using AutoMapper;
+using GymMangmentSystem.BLL.Common;
 using GymMangmentSystem.BLL.Services.AttachmentService;
 using GymMangmentSystem.BLL.Services.InterFaces;
 using GymMangmentSystem.BLL.ViewModels.MemberViewModels;
@@ -25,24 +26,30 @@ namespace GymMangmentSystem.BLL.Services.Classes
             _attachmentService = attachmentService;
         }
 
-        public async Task<bool> CreateMemberAsync(CreateMemberViewModel model, CancellationToken ct = default)
+        public async Task<Result> CreateMemberAsync(CreateMemberViewModel model, CancellationToken ct = default)
         {
-            var emailExist = await _memberRepository.AnyAsync(x => x.Email == model.Email, ct);
-            var phoneExist = await _memberRepository.AnyAsync(x => x.Phone == model.Phone, ct);
-            // Email or phone already in use
-            if (emailExist || phoneExist) return false;
+            if (await _memberRepository.AnyAsync(x => x.Email == model.Email, ct))
+                return Result.Failure("A member with this email already exists.");
+            if (await _memberRepository.AnyAsync(x => x.Phone == model.Phone, ct))
+                return Result.Failure("A member with this phone number already exists.");
 
             var photoPath = await _attachmentService.UploadAsync(
                 model.Photo.OpenReadStream(), model.Photo.FileName, MembersPhotoFolder, ct);
             // Reject when the photo fails validation (type/size) or saving
-            if (string.IsNullOrEmpty(photoPath)) return false;
+            if (string.IsNullOrEmpty(photoPath))
+                return Result.ValidationError("Photo upload failed. Allowed types are jpg/jpeg/png up to 5 MB.");
 
             var member = _mapper.Map<Member>(model);
             member.Photo = photoPath;
             member.CreatedAt = member.UpdatedAt = DateTime.Now;
 
-            var result = await _memberRepository.AddAsync(member);
-            return result > 0;
+            _memberRepository.Add(member);
+            var result = await _unitOfWork.SaveChangesAsync(ct);
+            if (result > 0) return Result.Success();
+
+            // Persisting the row failed — don't leave the uploaded file orphaned
+            _attachmentService.Delete(Path.GetFileName(photoPath), MembersPhotoFolder);
+            return Result.Failure("Failed to create the member.");
         }
 
         public async Task<IEnumerable<MemberViewModel>> GetAllMembersAsync(CancellationToken ct = default)
@@ -90,14 +97,16 @@ namespace GymMangmentSystem.BLL.Services.Classes
             return _mapper.Map<MemberToUpdateViewModel>(member);
         }
 
-        public async Task<bool> UpdateMemberDetailsAsync(int id, MemberToUpdateViewModel model, CancellationToken ct = default)
+        public async Task<Result> UpdateMemberDetailsAsync(int id, MemberToUpdateViewModel model, CancellationToken ct = default)
         {
             var member = await _memberRepository.GetByIdAsync(id, ct);
-            if (member == null) return false;
+            if (member == null) return Result.NotFound("Member not found.");
 
-            var emailTaken = await _memberRepository.AnyAsync(x => x.Email == model.Email && x.Id != id, ct);
-            var phoneTaken = await _memberRepository.AnyAsync(x => x.Phone == model.Phone && x.Id != id, ct);
-            if (emailTaken || phoneTaken) return false;
+            // Self-exclusion: the email/phone must not belong to a different member.
+            if (await _memberRepository.AnyAsync(x => x.Email == model.Email && x.Id != id, ct))
+                return Result.Failure("Another member is already using this email.");
+            if (await _memberRepository.AnyAsync(x => x.Phone == model.Phone && x.Id != id, ct))
+                return Result.Failure("Another member is already using this phone number.");
 
             member.Email = model.Email;
             member.Phone = model.Phone;
@@ -106,22 +115,30 @@ namespace GymMangmentSystem.BLL.Services.Classes
             member.Address.Street = model.Street;
             member.UpdatedAt = DateTime.Now;
 
-            var result = await _memberRepository.UpdateAsync(member);
-            return result > 0;
+            _memberRepository.Update(member);
+            var result = await _unitOfWork.SaveChangesAsync(ct);
+            return result > 0 ? Result.Success() : Result.Failure("Failed to update the member.");
         }
 
-        public async Task<bool> RemoveMemberAsync(int id, CancellationToken ct = default)
+        public async Task<Result> RemoveMemberAsync(int id, CancellationToken ct = default)
         {
             var member = await _memberRepository.GetByIdAsync(id, ct);
-            if (member == null) return false;
+            if (member == null) return Result.NotFound("Member not found.");
 
-            var result = await _memberRepository.DeleteAsync(member);
+            var hasUpcomingSessions = await _unitOfWork.GetRepository<Booking>()
+                .AnyAsync(b => b.MemberId == id && b.Session.StartDate > DateTime.Now, ct);
+            if (hasUpcomingSessions)
+                return Result.Failure("Cannot delete a member with upcoming booked sessions.");
+
+            _memberRepository.Delete(member);
+            var result = await _unitOfWork.SaveChangesAsync(ct);
+            if (result == 0) return Result.Failure("Failed to delete the member.");
 
             // Remove the stored photo only after the row is gone
-            if (result > 0 && !string.IsNullOrEmpty(member.Photo))
+            if (!string.IsNullOrEmpty(member.Photo))
                 _attachmentService.Delete(Path.GetFileName(member.Photo), MembersPhotoFolder);
 
-            return result > 0;
+            return Result.Success();
         }
     }
 }

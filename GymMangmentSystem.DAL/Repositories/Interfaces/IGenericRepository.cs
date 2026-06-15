@@ -7,9 +7,10 @@ namespace GymMangmentSystem.DAL.Repositories.Interfaces
     {
         Task<IEnumerable<TEntity>> GetAllAsync(bool tracking = false, CancellationToken ct = default);
         Task<TEntity?> GetByIdAsync(int id, CancellationToken ct = default, params Expression<Func<TEntity, object>>[] includes);
-        public Task<int> AddAsync(TEntity entity);
-        public Task<int> UpdateAsync(TEntity entity);
-        public Task<int> DeleteAsync(TEntity entity);
+        // Writes only stage the change on the DbSet — commit happens via IUnitOfWork.SaveChangesAsync.
+        void Add(TEntity entity);
+        void Update(TEntity entity);
+        void Delete(TEntity entity);
         Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default);
         Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, bool tracking = false, CancellationToken ct = default, params Expression<Func<TEntity, object>>[] includes);
     }

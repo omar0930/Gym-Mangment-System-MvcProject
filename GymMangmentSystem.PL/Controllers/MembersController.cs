@@ -30,12 +30,14 @@ namespace GymMangmentSystem.PL.Controllers
             }
 
             var result = await _memberService.CreateMemberAsync(model, ct);
-            if (result)
+            if (result.success)
+            {
                 TempData["SuccessMessage"] = "Member created successfully.";
-            else
-                TempData["ErrorMessage"] = "Failed to create member. Email or phone may already be in use.";
+                return RedirectToAction(nameof(Index));
+            }
 
-            return RedirectToAction(nameof(Index));
+            TempData["ErrorMessage"] = result.ErrorMessage;
+            return View(nameof(Create), model);
         }
 
         [HttpGet]
@@ -83,12 +85,14 @@ namespace GymMangmentSystem.PL.Controllers
             }
 
             var result = await _memberService.UpdateMemberDetailsAsync(model.Id, model, ct);
-            if (result)
+            if (result.success)
+            {
                 TempData["SuccessMessage"] = "Member updated successfully.";
-            else
-                TempData["ErrorMessage"] = "Failed to update member. Email or phone may already be in use.";
+                return RedirectToAction(nameof(Index));
+            }
 
-            return RedirectToAction(nameof(Index));
+            TempData["ErrorMessage"] = result.ErrorMessage;
+            return View(model);
         }
 
         [HttpGet]
@@ -107,10 +111,10 @@ namespace GymMangmentSystem.PL.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id, CancellationToken ct)
         {
             var result = await _memberService.RemoveMemberAsync(id, ct);
-            if (result)
+            if (result.success)
                 TempData["SuccessMessage"] = "Member deleted successfully.";
             else
-                TempData["ErrorMessage"] = "Failed to delete member.";
+                TempData["ErrorMessage"] = result.ErrorMessage;
 
             return RedirectToAction(nameof(Index));
         }

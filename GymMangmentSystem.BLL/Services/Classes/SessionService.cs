@@ -33,7 +33,8 @@ namespace GymMangmentSystem.BLL.Services.Classes
             var session = _mapper.Map<Session>(model);
             session.CreatedAt = session.UpdatedAt = DateTime.Now;
 
-            var result = await _unitOfWork.GetRepository<Session>().AddAsync(session);
+            _unitOfWork.GetRepository<Session>().Add(session);
+            var result = await _unitOfWork.SaveChangesAsync(ct);
             return result > 0
                 ? Result.Success()
                 : Result.Failure("Failed to create the session.");
@@ -96,7 +97,8 @@ namespace GymMangmentSystem.BLL.Services.Classes
             var session = await _unitOfWork.GetRepository<Session>().GetByIdAsync(SessionId, ct);
             if (session == null) return Result.NotFound("Session not found.");
 
-            var result = await _unitOfWork.GetRepository<Session>().DeleteAsync(session);
+            _unitOfWork.GetRepository<Session>().Delete(session);
+            var result = await _unitOfWork.SaveChangesAsync(ct);
             return result > 0
                 ? Result.Success()
                 : Result.Failure("Failed to delete the session.");
@@ -119,7 +121,8 @@ namespace GymMangmentSystem.BLL.Services.Classes
             session.TrainerId = model.TrainerId;
             session.UpdatedAt = DateTime.Now;
 
-            var result = await _unitOfWork.GetRepository<Session>().UpdateAsync(session);
+            _unitOfWork.GetRepository<Session>().Update(session);
+            var result = await _unitOfWork.SaveChangesAsync(ct);
             return result > 0
                 ? Result.Success()
                 : Result.Failure("Failed to update the session.");

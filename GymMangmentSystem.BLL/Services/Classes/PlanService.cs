@@ -49,7 +49,8 @@ namespace GymMangmentSystem.BLL.Services.Classes
             plan.Description = model.Description;
             plan.UpdatedAt = DateTime.Now;
 
-            var result = await _planRepository.UpdateAsync(plan);
+            _planRepository.Update(plan);
+            var result = await _unitOfWork.SaveChangesAsync(ct);
             return result > 0;
         }
 
@@ -60,7 +61,8 @@ namespace GymMangmentSystem.BLL.Services.Classes
 
             plan.IsActive = !plan.IsActive;
             plan.UpdatedAt = DateTime.Now;
-            await _planRepository.UpdateAsync(plan);
+            _planRepository.Update(plan);
+            await _unitOfWork.SaveChangesAsync(ct);
 
             return plan.IsActive;
         }
