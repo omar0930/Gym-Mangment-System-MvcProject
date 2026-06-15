@@ -2,10 +2,12 @@ using GymMangmentSystem.BLL;
 using GymMangmentSystem.BLL.Services.AttachmentService;
 using GymMangmentSystem.BLL.Services.Classes;
 using GymMangmentSystem.BLL.Services.InterFaces;
+using GymMangmentSystem.DAL.Data.Models;
 using GymMangmentSystem.DAL.DbContexts;
 using GymMangmentSystem.DAL.Models;
 using GymMangmentSystem.DAL.Repositories.Classes;
 using GymMangmentSystem.DAL.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -22,6 +24,22 @@ namespace GymMangmentSystem.PL
             builder.Services.AddDbContext<GymDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+            {
+                config.User.RequireUniqueEmail = true;
+                config.Lockout.MaxFailedAccessAttempts = 5;
+                config.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
+                config.Password.RequireDigit = true;
+                config.Password.RequireLowercase = true;
+                config.Password.RequireNonAlphanumeric = true;
+                config.Password.RequireUppercase = true;
+                config.Password.RequiredLength = 6;
+            }).AddEntityFrameworkStores<GymDbContext>().AddDefaultTokenProviders();
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/AccessDenied";
             });
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<ISessionRepository, SessionRepository>();
@@ -54,7 +72,7 @@ namespace GymMangmentSystem.PL
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
+                pattern: "{controller=Account}/{action=Login}/{id?}")
                 .WithStaticAssets();
 
             app.Run();
