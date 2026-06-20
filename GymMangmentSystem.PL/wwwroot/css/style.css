@@ -1,9 +1,12 @@
 /* ^ global style */
 
 :root {
-    --primary-color: #070093;
+    --primary-color: #3D4F5A; /* Slate Blue */
+    --primary-dark: #2F3D45; /* darker slate for active/pressed states */
+    --secondary-color: #73795D; /* Aloe */
+    --fog: #E2DECE; /* Fog */
     --main-duration: 300ms;
-    --black-alternative: #242424;
+    --black-alternative: #2E2C26; /* Charcoal */
 }
 
 button {
@@ -172,7 +175,7 @@ section.workout {
         section.workout .title h2 {
             font-size: 60px;
             font-weight: 700;
-            background-image: linear-gradient(#070093 45%, #ffffff);
+            background-image: linear-gradient(var(--primary-color) 45%, #ffffff);
             color: transparent;
             background-clip: text;
         }
@@ -239,49 +242,49 @@ section.workout {
 
 /* Filled Button - Default State */
 .btn-fill {
-    background-color: #070093;
-    border-color: #070093;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
     color: #fff;
 }
 
     /* Filled Button - Hover State (Switch to Outline) */
     .btn-fill:hover {
         background-color: transparent;
-        border-color: #070093;
-        color: #070093;
+        border-color: var(--primary-color);
+        color: var(--primary-color);
     }
 
 /* Outline Button - Default State */
 .btn-outline {
     background-color: transparent;
-    border-color: #070093;
-    color: #070093;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
 }
 
     /* Outline Button - Hover State (Switch to Fill) */
     .btn-outline:hover {
-        background-color: #070093;
-        border-color: #070093;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
         color: #fff;
     }
 
     /* Focus States for Accessibility */
     .btn-fill:focus,
     .btn-outline:focus {
-        outline: 3px solid rgba(7, 0, 147, 0.3);
+        outline: 3px solid rgba(61, 79, 90, 0.3);
         outline-offset: 2px;
     }
 
 /* Active/Pressed States */
 .btn-fill:active {
-    background-color: #050070;
-    border-color: #050070;
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
     transform: scale(0.98);
 }
 
 .btn-outline:active {
-    background-color: #050070;
-    border-color: #050070;
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
     color: #fff;
     transform: scale(0.98);
 }
@@ -489,7 +492,7 @@ footer .footer-content .location p {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(7, 0, 147, 0.1);
+    background-color: rgba(61, 79, 90, 0.1);
     border-radius: 10px;
 }
 
@@ -516,7 +519,7 @@ footer .footer-content .location p {
 }
 
 .bg-primary {
-    background-color: #070093 !important;
+    background-color: var(--primary-color) !important;
 }
 
 .icon-box {
@@ -587,3 +590,136 @@ footer .footer-content .location p {
         border-color: var(--primary-color);
         -webkit-text-fill-color: #fff; /* ensures text stays visible on hover */
     }
+/* ============================================================
+   Body Factory — Bootstrap theme override
+   Remaps Bootstrap's default blue (#0d6efd) to the palette so
+   text-primary / btn-primary / links / form focus match the brand.
+   ============================================================ */
+:root {
+    --bs-primary: #3D4F5A;
+    --bs-primary-rgb: 61, 79, 90;
+    --bs-link-color: #3D4F5A;
+    --bs-link-color-rgb: 61, 79, 90;
+    --bs-link-hover-color: #2F3D45;
+    --bs-link-hover-color-rgb: 47, 61, 69;
+}
+
+/* Bootstrap utility classes that defaulted to blue */
+.text-primary { color: var(--primary-color) !important; }
+.bg-primary { background-color: var(--primary-color) !important; }
+.border-primary { border-color: var(--primary-color) !important; }
+.link-primary { color: var(--primary-color) !important; }
+
+/* Default links */
+a { color: var(--primary-color); }
+a:hover { color: var(--primary-dark); }
+
+/* Solid primary button (version-proof: direct props + component vars) */
+.btn-primary {
+    --bs-btn-bg: var(--primary-color);
+    --bs-btn-border-color: var(--primary-color);
+    --bs-btn-hover-bg: var(--primary-dark);
+    --bs-btn-hover-border-color: var(--primary-dark);
+    --bs-btn-active-bg: var(--primary-dark);
+    --bs-btn-active-border-color: var(--primary-dark);
+    --bs-btn-disabled-bg: var(--primary-color);
+    --bs-btn-disabled-border-color: var(--primary-color);
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+    .btn-primary:hover,
+    .btn-primary:focus,
+    .btn-primary:active {
+        background-color: var(--primary-dark) !important;
+        border-color: var(--primary-dark) !important;
+    }
+
+.btn-outline-primary {
+    --bs-btn-color: var(--primary-color);
+    --bs-btn-border-color: var(--primary-color);
+    --bs-btn-hover-bg: var(--primary-color);
+    --bs-btn-hover-border-color: var(--primary-color);
+    --bs-btn-active-bg: var(--primary-color);
+    --bs-btn-active-border-color: var(--primary-color);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+    .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: #fff;
+    }
+
+/* Form controls: focus ring + checkbox/radio checked state */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(61, 79, 90, 0.25);
+}
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.form-check-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(61, 79, 90, 0.25);
+}
+
+/* Navbar links hover/active */
+.navbar .navbar-nav .nav-link:hover,
+.navbar .navbar-nav .nav-link:focus {
+    color: var(--primary-color);
+}
+
+/* Tables / misc accents that used Bootstrap primary */
+.table-primary {
+    --bs-table-bg: var(--fog);
+    --bs-table-color: var(--black-alternative);
+}
+
+/* ============================================================
+   Body Factory — Navbar: inline icons + hover + active section
+   ============================================================ */
+.navbar .navbar-nav .nav-link {
+    display: inline-flex;
+    align-items: center;     /* icon sits beside the text, not above */
+    white-space: nowrap;     /* keep each item on one line */
+    color: var(--black-alternative);
+    border-radius: 12px;
+    padding-inline: 14px !important;
+    margin-inline: 6px !important;
+    transition: color var(--main-duration), background-color var(--main-duration), transform var(--main-duration);
+}
+
+    .navbar .navbar-nav .nav-link i {
+        font-size: 1.1rem;
+        line-height: 1;
+    }
+
+    /* Hover */
+    .navbar .navbar-nav .nav-link:hover,
+    .navbar .navbar-nav .nav-link:focus {
+        background-color: rgba(61, 79, 90, 0.10); /* slate tint */
+        color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+
+    /* Active section highlight */
+    .navbar .navbar-nav .nav-link.active {
+        background-color: var(--primary-color);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(61, 79, 90, 0.30);
+    }
+
+        .navbar .navbar-nav .nav-link.active:hover,
+        .navbar .navbar-nav .nav-link.active:focus {
+            background-color: var(--primary-dark);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+/* Let the bar use the full width so inline items fit comfortably */
+.navbar > .container {
+    max-width: 100%;
+    padding-inline: 2rem;
+}
