@@ -21,6 +21,41 @@ namespace GymMangmentSystem.BLL
             MapMember();
             MapTrainer();
             MapPlan();
+            MapMembership();
+            MapBooking();
+        }
+
+        //membershipMapper
+        private void MapMembership()
+        {
+            CreateMap<Membership, ViewModels.MembershipViewModels.MembershipViewModel>()
+                .ForMember(dest => dest.MemberName, opt => opt.MapFrom(src => src.Member.Name))
+                .ForMember(dest => dest.PlanName, opt => opt.MapFrom(src => src.Plan.Name))
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Plan.Price))
+                .ForMember(dest => dest.DurationInDays, opt => opt.MapFrom(src => src.Plan.DurationInDays))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.CreatedAt));
+
+            CreateMap<Membership, ViewModels.MembershipViewModels.EditMembershipViewModel>()
+                .ForMember(dest => dest.MemberName, opt => opt.MapFrom(src => src.Member.Name))
+                .ForMember(dest => dest.PlanName, opt => opt.MapFrom(src => src.Plan.Name));
+
+            CreateMap<Member, ViewModels.MembershipViewModels.MemberSelectViewModel>();
+            CreateMap<Plan, ViewModels.MembershipViewModels.PlanSelectViewModel>();
+        }
+
+        //bookingMapper
+        private void MapBooking()
+        {
+            CreateMap<Booking, ViewModels.BookingViewModels.BookingViewModel>()
+                .ForMember(dest => dest.MemberName, opt => opt.MapFrom(src => src.Member.Name))
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Session.Category.CategoryName))
+                .ForMember(dest => dest.TrainerName, opt => opt.MapFrom(src => src.Session.Trainer.Name))
+                .ForMember(dest => dest.SessionDescription, opt => opt.MapFrom(src => src.Session.Descreption))
+                .ForMember(dest => dest.SessionStartDate, opt => opt.MapFrom(src => src.Session.StartDate))
+                .ForMember(dest => dest.SessionEndDate, opt => opt.MapFrom(src => src.Session.EndDate))
+                .ForMember(dest => dest.BookingDate, opt => opt.MapFrom(src => src.CreatedAt));
+
+            CreateMap<Member, ViewModels.BookingViewModels.MemberSelectViewModel>();
         }
 
         //planMapper

@@ -1,0 +1,113 @@
+@model BookingViewModel
+@{
+    ViewData["Title"] = "Booking Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header @(Model.Status == "Ongoing" ? "bg-success" : Model.Status == "Upcoming" ? "bg-primary" : "bg-secondary") text-white text-center py-4">
+                    <i class="bi bi-calendar2-check display-4 mb-3"></i>
+                    <h2 class="mb-2">@Model.CategoryName</h2>
+                    <span class="badge bg-light text-dark fs-6">@Model.Status</span>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="mb-4 p-3 bg-light rounded">
+                        <h6 class="text-primary-color mb-2">
+                            <i class="bi bi-file-text me-2"></i>Session Description
+                        </h6>
+                        <p class="mb-0">@Model.SessionDescription</p>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="detail-box p-3 border rounded">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box me-3">
+                                        <i class="bi bi-person-badge text-primary-color fs-3"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Member</small>
+                                        <strong>@Model.MemberName</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="detail-box p-3 border rounded">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box me-3">
+                                        <i class="bi bi-person-circle text-primary-color fs-3"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Trainer</small>
+                                        <strong>@Model.TrainerName</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="detail-box p-3 border rounded">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box me-3">
+                                        <i class="bi bi-calendar-event text-primary-color fs-3"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Session Time</small>
+                                        <strong>@Model.SessionStartDate.ToString("MMM dd, yyyy hh:mm tt")</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="detail-box p-3 border rounded">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box me-3">
+                                        <i class="bi bi-clock-history text-primary-color fs-3"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Booked On</small>
+                                        <strong>@Model.BookingDateDisplay</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="detail-box p-3 border rounded bg-light">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box me-3">
+                                        <i class="bi @(Model.IsAttended ? "bi-check-circle-fill text-success" : "bi-dash-circle text-secondary") fs-3"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Attendance</small>
+                                        <strong class="fs-5">@(Model.IsAttended ? "Attended" : "Not Attended")</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white border-0 p-4">
+                    <div class="d-flex justify-content-between gap-2">
+                        <a asp-action="Index" class="btn btn-outline flex-fill">
+                            <i class="bi bi-arrow-left me-1"></i>Back to Schedule
+                        </a>
+                        <form asp-action="MarkAttendance" asp-route-memberId="@Model.MemberId" asp-route-sessionId="@Model.SessionId" method="post" class="flex-fill">
+                            <button type="submit" class="btn btn-fill w-100">
+                                <i class="bi bi-clipboard-check me-1"></i>Toggle Attendance
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

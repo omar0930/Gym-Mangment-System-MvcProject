@@ -1,0 +1,85 @@
+@model CreateBookingViewModel
+@{
+    ViewData["Title"] = "Book Session";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div id="Alert" class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+else if (TempData["ErrorMessage"] != null)
+{
+    <div id="Alert" class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+<div class="container mt-4">
+    <header class="mb-4">
+        <h3 class="text-primary-color">Book a Session</h3>
+        <p class="text-muted">Reserve a seat for a member in an upcoming session</p>
+    </header>
+
+    <form asp-action="Create" method="post">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+
+                        <div class="section-header mb-3">
+                            <h5 class="text-primary fw-bold">Booking Information</h5>
+                            <hr class="mt-2">
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="MemberId" class="form-label fw-semibold">
+                                    Member <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="MemberId" asp-items="ViewBag.Members" class="form-select">
+                                    <option value="">Select Member</option>
+                                </select>
+                                <span asp-validation-for="MemberId" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="SessionId" class="form-label fw-semibold">
+                                    Session <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="SessionId" asp-items="ViewBag.Sessions" class="form-select">
+                                    <option value="">Select Session</option>
+                                </select>
+                                <span asp-validation-for="SessionId" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Only upcoming sessions are listed. The member must have an active membership and the session must have an available slot.
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-outline">
+                                <i class="bi bi-arrow-left me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-fill">
+                                <i class="bi bi-check-lg me-1"></i>Book Session
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
