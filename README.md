@@ -143,7 +143,7 @@ GymMangmentSystem/
 
 ### Prerequisites
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - SQL Server Express (or any SQL Server instance)
 - Visual Studio 2022 / VS Code / Rider
 
@@ -258,7 +258,6 @@ Both are idempotent: they no-op when data already exists, so restarts won't dupl
 ## 👤 Author
 
 **Omar Mohamed**
-Route Academy — Back-End Track (C44), MVC Session Project
 
 - GitHub: [@omar0930](https://github.com/omar0930)
 
